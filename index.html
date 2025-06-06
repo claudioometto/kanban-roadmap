@@ -60,6 +60,7 @@
     .grid {
       display: grid;
       grid-template-columns: 200px repeat(36, 1fr);
+      position: relative;
     }
 
     .cell {
@@ -207,7 +208,7 @@
           barra.style.background = cor;
           barra.style.left = `calc(200px + ${(ini) * (100 / 36)}%)`;
           barra.style.width = `calc(${(fim - ini + 1) * (100 / 36)}% - 4px)`;
-          barra.style.top = `${72 + 40 * row}px`;
+          barra.style.top = `${(row + categorias.indexOf(cat) + 1) * 40 + 48}px`;
           grid.appendChild(barra);
 
           row++;
