@@ -73,9 +73,7 @@
   </select>
 
   <label for="filtroAno">Ano:</label>
-  <select id="filtroAno">
-    <option value="">Todos</option>
-  </select>
+  <select id="filtroAno" multiple size="3"></select>
 
   <div id="roadmap"></div>
   <script>
@@ -115,7 +113,11 @@
       return meses;
     }
 
-    function renderTabela(filtroCategoria, filtroAno) {
+    function getSelectedOptions(select) {
+      return Array.from(select.selectedOptions).map(opt => opt.value);
+    }
+
+    function renderTabela(filtroCategoria, anosSelecionados) {
       let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
       entregas.forEach(e => {
         const ini = parseData(e.Inicio);
@@ -125,8 +127,8 @@
       });
 
       let meses = listaMeses(menorData, maiorData);
-      if (filtroAno) {
-        meses = meses.filter(m => m.getFullYear().toString() === filtroAno);
+      if (anosSelecionados.length > 0) {
+        meses = meses.filter(m => anosSelecionados.includes(m.getFullYear().toString()));
       }
 
       const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -193,10 +195,14 @@
       filtroAno.appendChild(option);
     });
 
-    filtroCategoria.addEventListener('change', () => renderTabela(filtroCategoria.value, filtroAno.value));
-    filtroAno.addEventListener('change', () => renderTabela(filtroCategoria.value, filtroAno.value));
+    filtroCategoria.addEventListener('change', () => {
+      renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno));
+    });
+    filtroAno.addEventListener('change', () => {
+      renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno));
+    });
 
-    renderTabela("", "");
+    renderTabela("", []);
   </script>
 </body>
 </html>
