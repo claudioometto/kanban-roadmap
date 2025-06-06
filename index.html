@@ -63,12 +63,6 @@
       padding: 6px 10px;
       font-size: 14px;
     }
-    #filtroAno {
-      width: 120px;
-      height: auto;
-      max-height: 100px;
-      overflow-y: auto;
-    }
   </style>
 </head>
 <body>
@@ -79,7 +73,9 @@
   </select>
 
   <label for="filtroAno">Ano:</label>
-  <select id="filtroAno" multiple></select>
+  <select id="filtroAno">
+    <option value="all">Todos os anos</option>
+  </select>
 
   <div id="roadmap"></div>
   <script>
@@ -119,16 +115,12 @@
       return meses;
     }
 
-    function getSelectedOptions(select) {
-      return Array.from(select.selectedOptions).map(opt => opt.value);
-    }
-
-    function renderTabela(filtroCategoria, anosSelecionados) {
+    function renderTabela(filtroCategoria, filtroAnos) {
       const menorData = new Date(Math.min(...entregas.map(e => parseData(e.Inicio))));
       const maiorData = new Date(Math.max(...entregas.map(e => parseData(e.Fim))));
       let meses = listaMeses(menorData, maiorData);
-      if (anosSelecionados.length > 0) {
-        meses = meses.filter(m => anosSelecionados.includes(m.getFullYear().toString()));
+      if (filtroAnos.length > 0) {
+        meses = meses.filter(m => filtroAnos.includes(m.getFullYear().toString()));
       }
 
       const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -193,15 +185,28 @@
         anosAbrangidos.add(ano);
       }
     });
-    [...anosAbrangidos].sort().forEach(ano => {
+
+    const todosOsAnos = [...anosAbrangidos].sort().map(String);
+    todosOsAnos.forEach(ano => {
       const option = document.createElement('option');
       option.value = ano;
       option.textContent = ano;
       filtroAno.appendChild(option);
     });
 
-    filtroCategoria.addEventListener('change', () => renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno)));
-    filtroAno.addEventListener('change', () => renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno)));
+    filtroCategoria.addEventListener('change', () => {
+      const filtro = filtroCategoria.value;
+      const anoSelecionado = filtroAno.value;
+      const anos = anoSelecionado === "all" || anoSelecionado === "" ? [] : [anoSelecionado];
+      renderTabela(filtro, anos);
+    });
+
+    filtroAno.addEventListener('change', () => {
+      const filtro = filtroCategoria.value;
+      const anoSelecionado = filtroAno.value;
+      const anos = anoSelecionado === "all" || anoSelecionado === "" ? [] : [anoSelecionado];
+      renderTabela(filtro, anos);
+    });
 
     renderTabela("", []);
   </script>
