@@ -4,16 +4,59 @@
   <meta charset="UTF-8">
   <title>Roadmap por Mês/Ano</title>
   <style>
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: center; font-size: 12px; }
-    th { background: #004aad; color: #fff; }
-    .entrega { text-align: left; font-weight: bold; background: #f0f0f0; color: #000; }
-    .fase { background: #e0e0e0; font-weight: bold; text-align: left; padding-left: 6px; }
-    .ativo { background: #d6e4f5; }
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { text-align: center; }
+    :root {
+      --azul-principal: #004aad;
+      --azul-claro: #d6e4f5;
+      --cinza-leve: #f0f0f0;
+      --cinza-medio: #e0e0e0;
+      --texto-claro: #fff;
+      --fonte-principal: 'Inter', 'Roboto', sans-serif;
+    }
+    body {
+      font-family: var(--fonte-principal);
+      background: #fafafa;
+      padding: 32px;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 24px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px 12px;
+      text-align: center;
+      font-size: 13px;
+    }
+    th {
+      background: var(--azul-principal);
+      color: var(--texto-claro);
+      font-weight: 600;
+    }
+    .entrega {
+      text-align: left;
+      font-weight: 600;
+      background: var(--cinza-leve);
+      color: #000;
+    }
+    .ativo {
+      background: var(--azul-claro);
+      border-radius: 4px;
+    }
     @media (max-width: 900px) {
-      th, td { padding: 2px 4px; font-size: 10px; }
+      th, td {
+        padding: 4px;
+        font-size: 10px;
+      }
     }
   </style>
 </head>
