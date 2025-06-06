@@ -187,7 +187,11 @@
       filtroCategoria.appendChild(option);
     });
 
-    const anosUnicos = [...new Set(entregas.flatMap(e => [parseData(e.Inicio).getFullYear(), parseData(e.Fim).getFullYear()]))].sort();
+    const anosUnicos = [...new Set(entregas.flatMap(e => {
+  const ini = parseData(e.Inicio).getFullYear();
+  const fim = parseData(e.Fim).getFullYear();
+  return Array.from({ length: fim - ini + 1 }, (_, i) => ini + i);
+}))].sort();
     anosUnicos.forEach(ano => {
       const option = document.createElement('option');
       option.value = ano;
