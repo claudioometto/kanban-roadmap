@@ -58,10 +58,19 @@
         font-size: 10px;
       }
     }
+    select {
+      margin-bottom: 16px;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
   </style>
 </head>
 <body>
   <h1>Roadmap de Produtos - Plataforma</h1>
+  <label for="filtroCategoria">Filtrar por categoria:</label>
+  <select id="filtroCategoria">
+    <option value="">Todas</option>
+  </select>
   <div id="roadmap"></div>
   <script>
     const entregas = [
@@ -111,41 +120,58 @@
     const meses = listaMeses(menorData, maiorData);
     const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-    let html = `<table>`;
-    html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
-    let anoAtual = null;
-    meses.forEach((m, i) => {
-      const ano = m.getFullYear();
-      if (ano !== anoAtual) {
-        const span = meses.filter(x => x.getFullYear() === ano).length;
-        html += `<th colspan="${span}">${ano}</th>`;
-        anoAtual = ano;
-      }
-    });
-    html += `</tr><tr><th></th><th></th>`;
-    meses.forEach(m => {
-      html += `<th>${nomesMes[m.getMonth()]}</th>`;
-    });
-    html += `</tr>`;
-
-    const fases = [...new Set(entregas.map(e => e.Fase))];
-    fases.forEach(fase => {
-      const grupo = entregas.filter(e => e.Fase === fase);
-      grupo.forEach((e, index) => {
-        html += `<tr>`;
-        html += index === 0 ? `<td rowspan="${grupo.length}" class="entrega">${fase}</td>` : "";
-        html += `<td class="entrega">${e.Entrega}</td>`;
-        const ini = parseData(e.Inicio);
-        const fim = parseData(e.Fim);
-        meses.forEach(m => {
-          html += (m >= ini && m <= fim) ? `<td class="ativo"></td>` : `<td></td>`;
-        });
-        html += `</tr>`;
+    function renderTabela(filtro) {
+      let html = `<table>`;
+      html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
+      let anoAtual = null;
+      meses.forEach((m, i) => {
+        const ano = m.getFullYear();
+        if (ano !== anoAtual) {
+          const span = meses.filter(x => x.getFullYear() === ano).length;
+          html += `<th colspan="${span}">${ano}</th>`;
+          anoAtual = ano;
+        }
       });
+      html += `</tr><tr><th></th><th></th>`;
+      meses.forEach(m => {
+        html += `<th>${nomesMes[m.getMonth()]}</th>`;
+      });
+      html += `</tr>`;
+
+      const fases = [...new Set(entregas.map(e => e.Fase))];
+      fases.forEach(fase => {
+        if (filtro && fase !== filtro) return;
+        const grupo = entregas.filter(e => e.Fase === fase);
+        grupo.forEach((e, index) => {
+          html += `<tr>`;
+          html += index === 0 ? `<td rowspan="${grupo.length}" class="entrega">${fase}</td>` : "";
+          html += `<td class="entrega">${e.Entrega}</td>`;
+          const ini = parseData(e.Inicio);
+          const fim = parseData(e.Fim);
+          meses.forEach(m => {
+            html += (m >= ini && m <= fim) ? `<td class="ativo"></td>` : `<td></td>`;
+          });
+          html += `</tr>`;
+        });
+      });
+
+      html += `</table>`;
+      document.getElementById('roadmap').innerHTML = html;
+    }
+
+    // Preencher dropdown
+    const filtroSelect = document.getElementById('filtroCategoria');
+    const fasesUnicas = [...new Set(entregas.map(e => e.Fase))];
+    fasesUnicas.forEach(fase => {
+      const option = document.createElement('option');
+      option.value = fase;
+      option.textContent = fase;
+      filtroSelect.appendChild(option);
     });
 
-    html += `</table>`;
-    document.getElementById('roadmap').innerHTML = html;
+    filtroSelect.addEventListener('change', e => renderTabela(e.target.value));
+
+    renderTabela("");
   </script>
 </body>
 </html>
