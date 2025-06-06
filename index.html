@@ -4,41 +4,40 @@
   <meta charset="UTF-8">
   <title>Roadmap por Mês/Ano</title>
   <style>
-    table { border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: center; }
-    th { background: #eee; }
-    .ativo { background: #4caf50; color: #fff; }
-    .entrega { text-align: left; font-weight: bold; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: center; font-size: 12px; }
+    th { background: #004aad; color: #fff; }
+    .entrega { text-align: left; font-weight: bold; background: #f0f0f0; color: #000; }
+    .ativo { background: #d6e4f5; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { text-align: center; }
     @media (max-width: 900px) {
       th, td { padding: 2px 4px; font-size: 10px; }
     }
   </style>
 </head>
 <body>
-  <h1>Roadmap</h1>
+  <h1>Roadmap de Produtos - Plataforma</h1>
   <div id="roadmap"></div>
   <script>
     const entregas = [
-      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
-      {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "30/06/2025"},
+      {Entrega: "Múltiplas adquirentes", Fase: "Discovery / Growth", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Pix automático", Fase: "Discovery / Growth", Inicio: "2024", Fim: "30/06/2025"},
+      {Entrega: "Unificação Navision", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "Unificação Salesforce", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "FCV Salesforce", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "30/06/2025"},
       {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
       {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "31/09/2025"},
-      {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "31/09/2025"},
-      {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "01/03/2025", Fim: "30/03/2025"},
-      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024", Fim: "31/03/2025"},
+      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "30/09/2025"},
+      {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "30/09/2025"},
+      {Entrega: "Analytics B2C", Fase: "Desenvolvimento", Inicio: "01/03/2025", Fim: "30/03/2025"},
+      {Entrega: "Adoção B2B", Fase: "Desenvolvimento", Inicio: "2024", Fim: "31/03/2025"},
       {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
     ];
 
-    // Função para converter datas
     function parseData(data) {
       if (!data) return null;
-      if (/^\d{4}$/.test(data)) { // só ano
-        return new Date(`${data}-01-01`);
-      }
+      if (/^\d{4}$/.test(data)) return new Date(`${data}-01-01`);
       if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
         const [dia, mes, ano] = data.split("/");
         return new Date(`${ano}-${mes}-${dia}`);
@@ -46,7 +45,6 @@
       return new Date(data);
     }
 
-    // Descobrir o menor e maior mês/ano
     let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
     entregas.forEach(e => {
       const ini = parseData(e.Inicio);
@@ -55,7 +53,6 @@
       if (fim > maiorData) maiorData = fim;
     });
 
-    // Gerar array de meses/anos entre menorData e maiorData
     function listaMeses(menor, maior) {
       let meses = [];
       let atual = new Date(menor.getFullYear(), menor.getMonth(), 1);
@@ -70,14 +67,12 @@
     const meses = listaMeses(menorData, maiorData);
     const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-    // Montar header
     let html = `<table><tr><th class="entrega">Entrega</th>`;
     meses.forEach(m => {
       html += `<th>${nomesMes[m.getMonth()]}/${m.getFullYear()}</th>`;
     });
     html += `</tr>`;
 
-    // Montar linhas
     entregas.forEach(e => {
       html += `<tr><td class="entrega" title="${e.Fase}">${e.Entrega}</td>`;
       const ini = parseData(e.Inicio);
