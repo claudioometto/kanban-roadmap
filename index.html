@@ -1,241 +1,84 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>Roadmap de Produtos - Plataforma</title>
+  <meta charset="UTF-8">
+  <title>Kanban Roadmap</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-    h1 {
-      text-align: center;
-    }
-    .roadmap {
+    table {
       border-collapse: collapse;
       width: 100%;
+      margin-top: 20px;
     }
-    .roadmap th, .roadmap td {
+    th, td {
       border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      vertical-align: middle;
-    }
-    .ano {
-      background: #004aad;
-      color: white;
-      font-weight: bold;
-    }
-    .trimestre {
-      background: #1976d2;
-      color: white;
-    }
-    .categoria {
-      font-weight: bold;
-      background: #f0f0f0;
-      width: 160px;
+      padding: 8px 12px;
       text-align: left;
     }
-    .bloco {
-      background: #d6e4f5;
-      border-radius: 4px;
-      padding: 4px;
-      margin: 2px 0;
+    th {
+      background: #f4f4f4;
     }
   </style>
 </head>
 <body>
+  <h1>Kanban Roadmap</h1>
+  <table id="roadmap">
+    <thead>
+      <tr>
+        <th>Entrega</th>
+        <th>Fase</th>
+        <th>Início</th>
+        <th>Fim</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Linhas serão preenchidas pelo JS -->
+    </tbody>
+  </table>
 
-<h1>Roadmap de Produtos - Plataforma</h1>
+  <script>
+    const dados = [
+      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
+      {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "30/06/2025"},
+      {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "31/09/2025"},
+      {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "31/09/2025"},
+      {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "01/03/2025", Fim: "30/03/2025"},
+      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024", Fim: "31/03/2025"},
+      {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
+    ];
 
-<table class="roadmap">
-  <tr>
-    <th rowspan="2">Categorias</th>
-    <th colspan="4" class="ano">2024</th>
-    <th colspan="4" class="ano">2025</th>
-    <th colspan="4" class="ano">2026</th>
-  </tr>
-  <tr>
-    <th class="trimestre">Jan–Mar</th>
-    <th class="trimestre">Abr–Jun</th>
-    <th class="trimestre">Jul–Set</th>
-    <th class="trimestre">Out–Dez</th>
-    <th class="trimestre">Jan–Mar</th>
-    <th class="trimestre">Abr–Jun</th>
-    <th class="trimestre">Jul–Set</th>
-    <th class="trimestre">Out–Dez</th>
-    <th class="trimestre">Jan–Mar</th>
-    <th class="trimestre">Abr–Jun</th>
-    <th class="trimestre">Jul–Set</th>
-    <th class="trimestre">Out–Dez</th>
-  </tr>
+    function parseData(data) {
+      if (!data) return new Date(0);
+      if (/^\d{4}$/.test(data)) {
+        // Apenas ano
+        return new Date(`${data}-01-01`);
+      }
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+        // Formato dd/mm/yyyy
+        const [dia, mes, ano] = data.split("/");
+        return new Date(`${ano}-${mes}-${dia}`);
+      }
+      return new Date(data);
+    }
 
-  <!-- Discovery / Growth -->
-  <tr>
-    <td class="categoria" rowspan="4">Discovery / Growth</td>
-    <td><div class="bloco">Múltiplas adquirentes</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><div class="bloco">Pix automático</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><div class="bloco">Unificação Navision</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td><div class="bloco">Unificação Salesforce</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
+    // Ordena pelo campo "Inicio" (data mais antiga primeiro)
+    dados.sort((a, b) => parseData(a.Inicio) - parseData(b.Inicio));
 
-  <!-- Refinamento -->
-  <tr>
-    <td class="categoria" rowspan="4">Refinamento</td>
-    <td></td>
-    <td><div class="bloco">Projeto redução de perdas B2B</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><div class="bloco">Adoção B2C</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><div class="bloco">Backoffice Plataforma</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><div class="bloco">Redução de cancelamentos B2B</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-
-  <!-- Desenvolvimento -->
-  <tr>
-    <td class="categoria" rowspan="2">Desenvolvimento</td>
-    <td></td>
-    <td><div class="bloco">Analytics B2C</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><div class="bloco">Adoção B2B</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-
-  <!-- Finalizado -->
-  <tr>
-    <td class="categoria">Finalizado</td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td><div class="bloco">PCI 2025</div></td>
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
-  </tr>
-</table>
-
+    const tbody = document.querySelector("#roadmap tbody");
+    dados.forEach(item => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${item.Entrega}</td>
+        <td>${item.Fase}</td>
+        <td>${item.Inicio}</td>
+        <td>${item.Fim}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  </script>
 </body>
 </html>
