@@ -2,23 +2,23 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Roadmap</title>
+  <title>Roadmap por Mês/Ano</title>
   <style>
-    body { font-family: Arial, sans-serif; }
-    h2 { margin-top: 40px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
-    th, td { border: 1px solid #ddd; padding: 8px; }
-    th { background: #f4f4f4; }
-    .Discovery { background: #e6f7ff; }
-    .Refinamento { background: #fffbe6; }
-    .Finalizado { background: #e6ffe6; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: center; }
+    th { background: #eee; }
+    .ativo { background: #4caf50; color: #fff; }
+    .entrega { text-align: left; font-weight: bold; background: #f9f9f9; }
+    @media (max-width: 900px) {
+      th, td { padding: 2px 4px; font-size: 10px; }
+    }
   </style>
 </head>
 <body>
-  <h1>Roadmap por Fase</h1>
+  <h1>Roadmap</h1>
   <div id="roadmap"></div>
   <script>
-    const dados = [
+    const entregas = [
       {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
       {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
       {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
@@ -33,9 +33,12 @@
       {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
     ];
 
+    // Função para converter datas
     function parseData(data) {
-      if (!data) return new Date(0);
-      if (/^\d{4}$/.test(data)) return new Date(`${data}-01-01`);
+      if (!data) return null;
+      if (/^\d{4}$/.test(data)) { // só ano
+        return new Date(`${data}-01-01`);
+      }
       if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
         const [dia, mes, ano] = data.split("/");
         return new Date(`${ano}-${mes}-${dia}`);
@@ -43,23 +46,53 @@
       return new Date(data);
     }
 
-    // Ordenar por fase e por início
-    dados.sort((a, b) => {
-      if (a.Fase === b.Fase) return parseData(a.Inicio) - parseData(b.Inicio);
-      return a.Fase.localeCompare(b.Fase);
+    // Descobrir o menor e maior mês/ano
+    let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
+    entregas.forEach(e => {
+      const ini = parseData(e.Inicio);
+      const fim = parseData(e.Fim);
+      if (ini < menorData) menorData = ini;
+      if (fim > maiorData) maiorData = fim;
     });
 
-    // Agrupar por fase
-    const fases = [...new Set(dados.map(item => item.Fase))];
-    let html = '';
-    fases.forEach(fase => {
-      html += `<h2>${fase}</h2><table>
-        <tr><th>Entrega</th><th>Início</th><th>Fim</th></tr>`;
-      dados.filter(item => item.Fase === fase).forEach(item => {
-        html += `<tr class="${fase}"><td>${item.Entrega}</td><td>${item.Inicio}</td><td>${item.Fim}</td></tr>`;
-      });
-      html += `</table>`;
+    // Gerar array de meses/anos entre menorData e maiorData
+    function listaMeses(menor, maior) {
+      let meses = [];
+      let atual = new Date(menor.getFullYear(), menor.getMonth(), 1);
+      let fim = new Date(maior.getFullYear(), maior.getMonth(), 1);
+      while (atual <= fim) {
+        meses.push(new Date(atual));
+        atual.setMonth(atual.getMonth() + 1);
+      }
+      return meses;
+    }
+
+    const meses = listaMeses(menorData, maiorData);
+    const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+    // Montar header
+    let html = `<table><tr><th class="entrega">Entrega</th>`;
+    meses.forEach(m => {
+      html += `<th>${nomesMes[m.getMonth()]}/${m.getFullYear()}</th>`;
     });
+    html += `</tr>`;
+
+    // Montar linhas
+    entregas.forEach(e => {
+      html += `<tr><td class="entrega" title="${e.Fase}">${e.Entrega}</td>`;
+      const ini = parseData(e.Inicio);
+      const fim = parseData(e.Fim);
+      meses.forEach(m => {
+        if (m >= ini && m <= fim) {
+          html += `<td class="ativo"></td>`;
+        } else {
+          html += `<td></td>`;
+        }
+      });
+      html += `</tr>`;
+    });
+    html += `</table>`;
+
     document.getElementById('roadmap').innerHTML = html;
   </script>
 </body>
