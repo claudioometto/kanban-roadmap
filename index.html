@@ -170,7 +170,6 @@
 
     function render() {
       grid.innerHTML = "";
-      // Cabeçalho
       grid.innerHTML += `<div class='nome-entrega'></div>`;
       for (let y of anos) {
         for (let m = 0; m < 12; m++) {
@@ -179,8 +178,9 @@
         }
       }
 
-      let row = 0;
+      let linhaAbsoluta = 1;
       let corIndex = 0;
+
       categorias.forEach(cat => {
         const cor = cores[corIndex++ % cores.length];
         const blocos = entregas.filter(e => e.Fase === cat)
@@ -189,11 +189,14 @@
 
         if (blocos.length === 0) return;
 
+        // Cabeçalho da categoria
         const header = document.createElement("div");
         header.className = "cat-header";
         header.textContent = cat;
         grid.appendChild(header);
         for (let i = 0; i < 36; i++) grid.appendChild(document.createElement("div"));
+
+        linhaAbsoluta++;
 
         blocos.forEach(e => {
           grid.innerHTML += `<div class='nome-entrega'>${e.Entrega}</div>`;
@@ -208,10 +211,10 @@
           barra.style.background = cor;
           barra.style.left = `calc(200px + ${(ini) * (100 / 36)}%)`;
           barra.style.width = `calc(${(fim - ini + 1) * (100 / 36)}% - 4px)`;
-          barra.style.top = `${(row + categorias.indexOf(cat) + 1) * 40 + 48}px`;
+          barra.style.top = `${(linhaAbsoluta) * 40 + 48}px`;
           grid.appendChild(barra);
 
-          row++;
+          linhaAbsoluta++;
         });
       });
     }
