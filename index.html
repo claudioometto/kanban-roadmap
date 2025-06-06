@@ -69,7 +69,7 @@
     const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
     let html = `<table>`;
-    html += `<tr><th class="entrega">Entrega</th>`;
+    html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
     let anoAtual = null;
     meses.forEach((m, i) => {
       const ano = m.getFullYear();
@@ -79,7 +79,7 @@
         anoAtual = ano;
       }
     });
-    html += `</tr><tr><th></th>`;
+    html += `</tr><tr><th></th><th></th>`;
     meses.forEach(m => {
       html += `<th>${nomesMes[m.getMonth()]}</th>`;
     });
@@ -87,9 +87,11 @@
 
     const fases = [...new Set(entregas.map(e => e.Fase))];
     fases.forEach(fase => {
-      html += `<tr><td colspan="${meses.length + 1}" class="fase">${fase}</td></tr>`;
-      entregas.filter(e => e.Fase === fase).forEach(e => {
-        html += `<tr><td class="entrega">${e.Entrega}</td>`;
+      const grupo = entregas.filter(e => e.Fase === fase);
+      grupo.forEach((e, index) => {
+        html += `<tr>`;
+        html += index === 0 ? `<td rowspan="${grupo.length}" class="entrega">${fase}</td>` : "";
+        html += `<td class="entrega">${e.Entrega}</td>`;
         const ini = parseData(e.Inicio);
         const fim = parseData(e.Fim);
         meses.forEach(m => {
