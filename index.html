@@ -8,6 +8,7 @@
     th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: center; font-size: 12px; }
     th { background: #004aad; color: #fff; }
     .entrega { text-align: left; font-weight: bold; background: #f0f0f0; color: #000; }
+    .fase { background: #e0e0e0; font-weight: bold; text-align: left; padding-left: 6px; }
     .ativo { background: #d6e4f5; }
     body { font-family: Arial, sans-serif; padding: 20px; }
     h1 { text-align: center; }
@@ -21,17 +22,17 @@
   <div id="roadmap"></div>
   <script>
     const entregas = [
-      {Entrega: "Múltiplas adquirentes", Fase: "Discovery / Growth", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Pix automático", Fase: "Discovery / Growth", Inicio: "2024", Fim: "30/06/2025"},
-      {Entrega: "Unificação Navision", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "Unificação Salesforce", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "FCV Salesforce", Fase: "Discovery / Growth", Inicio: "01/04/2025", Fim: "30/06/2025"},
+      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
+      {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
+      {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "30/06/2025"},
       {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
       {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
       {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "30/09/2025"},
       {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "30/09/2025"},
-      {Entrega: "Analytics B2C", Fase: "Desenvolvimento", Inicio: "01/03/2025", Fim: "30/03/2025"},
-      {Entrega: "Adoção B2B", Fase: "Desenvolvimento", Inicio: "2024", Fim: "31/03/2025"},
+      {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "01/03/2025", Fim: "30/03/2025"},
+      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024", Fim: "31/03/2025"},
       {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
     ];
 
@@ -67,27 +68,38 @@
     const meses = listaMeses(menorData, maiorData);
     const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
-    let html = `<table><tr><th class="entrega">Entrega</th>`;
+    let html = `<table>`;
+    html += `<tr><th class="entrega">Entrega</th>`;
+    let anoAtual = null;
+    meses.forEach((m, i) => {
+      const ano = m.getFullYear();
+      if (ano !== anoAtual) {
+        const span = meses.filter(x => x.getFullYear() === ano).length;
+        html += `<th colspan="${span}">${ano}</th>`;
+        anoAtual = ano;
+      }
+    });
+    html += `</tr><tr><th></th>`;
     meses.forEach(m => {
-      html += `<th>${nomesMes[m.getMonth()]}/${m.getFullYear()}</th>`;
+      html += `<th>${nomesMes[m.getMonth()]}</th>`;
     });
     html += `</tr>`;
 
-    entregas.forEach(e => {
-      html += `<tr><td class="entrega" title="${e.Fase}">${e.Entrega}</td>`;
-      const ini = parseData(e.Inicio);
-      const fim = parseData(e.Fim);
-      meses.forEach(m => {
-        if (m >= ini && m <= fim) {
-          html += `<td class="ativo"></td>`;
-        } else {
-          html += `<td></td>`;
-        }
+    const fases = [...new Set(entregas.map(e => e.Fase))];
+    fases.forEach(fase => {
+      html += `<tr><td colspan="${meses.length + 1}" class="fase">${fase}</td></tr>`;
+      entregas.filter(e => e.Fase === fase).forEach(e => {
+        html += `<tr><td class="entrega">${e.Entrega}</td>`;
+        const ini = parseData(e.Inicio);
+        const fim = parseData(e.Fim);
+        meses.forEach(m => {
+          html += (m >= ini && m <= fim) ? `<td class="ativo"></td>` : `<td></td>`;
+        });
+        html += `</tr>`;
       });
-      html += `</tr>`;
     });
-    html += `</table>`;
 
+    html += `</table>`;
     document.getElementById('roadmap').innerHTML = html;
   </script>
 </body>
