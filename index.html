@@ -74,7 +74,7 @@
 
   <label for="filtroAno">Ano:</label>
   <select id="filtroAno">
-    <option value="all">Todos os anos</option>
+    <option value="">Todos os anos</option>
   </select>
 
   <div id="roadmap"></div>
@@ -115,12 +115,12 @@
       return meses;
     }
 
-    function renderTabela(filtroCategoria, filtroAnos) {
+    function renderTabela(filtroCategoria, filtroAno) {
       const menorData = new Date(Math.min(...entregas.map(e => parseData(e.Inicio))));
       const maiorData = new Date(Math.max(...entregas.map(e => parseData(e.Fim))));
       let meses = listaMeses(menorData, maiorData);
-      if (filtroAnos.length > 0) {
-        meses = meses.filter(m => filtroAnos.includes(m.getFullYear().toString()));
+      if (filtroAno !== "") {
+        meses = meses.filter(m => m.getFullYear().toString() === filtroAno);
       }
 
       const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
@@ -186,8 +186,7 @@
       }
     });
 
-    const todosOsAnos = [...anosAbrangidos].sort().map(String);
-    todosOsAnos.forEach(ano => {
+    [...anosAbrangidos].sort().forEach(ano => {
       const option = document.createElement('option');
       option.value = ano;
       option.textContent = ano;
@@ -195,20 +194,14 @@
     });
 
     filtroCategoria.addEventListener('change', () => {
-      const filtro = filtroCategoria.value;
-      const anoSelecionado = filtroAno.value;
-      const anos = anoSelecionado === "all" || anoSelecionado === "" ? [] : [anoSelecionado];
-      renderTabela(filtro, anos);
+      renderTabela(filtroCategoria.value, filtroAno.value);
     });
 
     filtroAno.addEventListener('change', () => {
-      const filtro = filtroCategoria.value;
-      const anoSelecionado = filtroAno.value;
-      const anos = anoSelecionado === "all" || anoSelecionado === "" ? [] : [anoSelecionado];
-      renderTabela(filtro, anos);
+      renderTabela(filtroCategoria.value, filtroAno.value);
     });
 
-    renderTabela("", []);
+    renderTabela("", "");
   </script>
 </body>
 </html>
