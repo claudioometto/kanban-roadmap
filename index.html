@@ -7,9 +7,9 @@
     :root {
       --bg: #0e1a2b;
       --text: #e1e8f0;
-      --linha: #2a3b57;
-      --borda: #3f4d68;
-      --categorias: #6ec1e4, #f6c979, #82d173, #ff92b1;
+      --linha: #1c2d44;
+      --borda: #324056;
+      --cores: #6ec1e4, #f6c979, #82d173, #ff92b1;
     }
 
     * {
@@ -26,8 +26,8 @@
 
     h1 {
       text-align: center;
-      margin-bottom: 32px;
-      font-size: 28px;
+      margin-bottom: 24px;
+      font-size: 24px;
     }
 
     .filtros {
@@ -37,61 +37,65 @@
       margin-bottom: 24px;
     }
 
+    label {
+      font-size: 14px;
+    }
+
     select {
       padding: 6px 12px;
       font-size: 14px;
       border-radius: 6px;
       border: none;
-      background-color: #1c2c45;
+      background-color: #1b2c47;
       color: var(--text);
+    }
+
+    .roadmap {
+      position: relative;
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--borda);
     }
 
     .grid {
       display: grid;
-      grid-template-columns: 180px repeat(36, 1fr);
-      border-top: 1px solid var(--borda);
-      position: relative;
+      grid-template-columns: 160px repeat(36, 1fr);
     }
 
     .linha {
       display: contents;
     }
 
-    .categoria {
+    .cat-label {
       background-color: var(--linha);
-      padding: 12px;
-      font-weight: 600;
+      padding: 10px;
       border-bottom: 1px solid var(--borda);
+      font-weight: 600;
     }
 
-    .celula {
+    .cell {
       height: 40px;
       border-left: 1px solid var(--borda);
       border-bottom: 1px solid var(--borda);
-      position: relative;
     }
 
     .barra {
       position: absolute;
-      height: 30px;
+      height: 28px;
       border-radius: 6px;
       padding: 4px 8px;
       font-size: 12px;
       font-weight: 500;
       white-space: nowrap;
-      color: #fff;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-
-    .meses {
-      display: contents;
+      color: #000;
     }
 
     .mes-label {
       text-align: center;
       font-size: 12px;
-      background-color: #1b2c47;
+      background-color: #15263d;
       padding: 4px;
       border-left: 1px solid var(--borda);
       border-bottom: 1px solid var(--borda);
@@ -100,6 +104,7 @@
 </head>
 <body>
   <h1>Roadmap de Produtos - Plataforma (Visual 2.0)</h1>
+
   <div class="filtros">
     <label>Categoria:
       <select id="filtroCategoria">
@@ -108,11 +113,14 @@
     </label>
     <label>Ano:
       <select id="filtroAno">
-        <option value="">Todos</option>
+        <option value="">Todos os anos</option>
       </select>
     </label>
   </div>
-  <div id="roadmap" class="grid"></div>
+
+  <div class="roadmap">
+    <div id="grid" class="grid"></div>
+  </div>
 
   <script>
     const entregas = [
@@ -127,77 +135,78 @@
       {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "2025-04", Fim: "2025-09"},
       {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "2025-03", Fim: "2025-03"},
       {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024-01", Fim: "2025-03"},
-      {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "2025-04", Fim: "2025-06"},
+      {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "2025-04", Fim: "2025-06"}
     ];
 
     const categorias = [...new Set(entregas.map(e => e.Fase))];
+    const anos = [2023, 2024, 2025];
     const cores = ["#6ec1e4", "#f6c979", "#82d173", "#ff92b1"];
 
-    const roadmap = document.getElementById("roadmap");
     const filtroCategoria = document.getElementById("filtroCategoria");
     const filtroAno = document.getElementById("filtroAno");
+    const grid = document.getElementById("grid");
 
-    categorias.forEach(c => {
+    categorias.forEach(cat => {
       const opt = document.createElement("option");
-      opt.value = c;
-      opt.textContent = c;
+      opt.value = cat;
+      opt.textContent = cat;
       filtroCategoria.appendChild(opt);
     });
 
-    const anos = [2023, 2024, 2025];
-    anos.forEach(a => {
+    anos.forEach(ano => {
       const opt = document.createElement("option");
-      opt.value = a;
-      opt.textContent = a;
+      opt.value = ano;
+      opt.textContent = ano;
       filtroAno.appendChild(opt);
     });
 
-    function gerarGrade() {
-      roadmap.innerHTML = "";
-      // Header meses
-      roadmap.innerHTML += `<div class='categoria'></div>`;
-      for (let a = 2023; a <= 2025; a++) {
+    function render() {
+      grid.innerHTML = "";
+      // Cabeçalho
+      grid.innerHTML += `<div class='cat-label'></div>`;
+      for (let y of anos) {
         for (let m = 0; m < 12; m++) {
-          const nomeMes = new Date(a, m).toLocaleString('pt-BR', { month: 'short' });
-          roadmap.innerHTML += `<div class='mes-label'>${nomeMes}/${a}</div>`;
+          const nome = new Date(y, m).toLocaleString("pt-BR", { month: "short" });
+          grid.innerHTML += `<div class='mes-label'>${nome}/${y}</div>`;
         }
       }
 
+      let row = 0;
       let corIndex = 0;
       categorias.forEach(cat => {
-        const cor = cores[corIndex % cores.length];
-        corIndex++;
-        const entregasCat = entregas.filter(e => e.Fase === cat &&
-          (!filtroCategoria.value || filtroCategoria.value === cat) &&
-          (!filtroAno.value || e.Inicio.startsWith(filtroAno.value) || e.Fim.startsWith(filtroAno.value)));
+        const cor = cores[corIndex++ % cores.length];
+        const linhas = entregas.filter(e => e.Fase === cat)
+          .filter(e => !filtroCategoria.value || filtroCategoria.value === e.Fase)
+          .filter(e => !filtroAno.value || e.Inicio.startsWith(filtroAno.value) || e.Fim.startsWith(filtroAno.value));
 
-        entregasCat.forEach(e => {
-          roadmap.innerHTML += `<div class='categoria'>${cat}</div>`;
-          for (let i = 0; i < 36; i++) roadmap.innerHTML += `<div class='celula'></div>`;
+        linhas.forEach(e => {
+          // Categoria
+          grid.innerHTML += `<div class='cat-label'>${cat}</div>`;
+          for (let i = 0; i < 36; i++) grid.innerHTML += `<div class='cell'></div>`;
 
-          const indexInicio = (parseInt(e.Inicio.slice(0, 4)) - 2023) * 12 + (parseInt(e.Inicio.slice(5, 7)) - 1);
-          const indexFim = (parseInt(e.Fim.slice(0, 4)) - 2023) * 12 + (parseInt(e.Fim.slice(5, 7)) - 1);
-
-          const pos = (indexInicio + 1) * (100 / 36);
-          const largura = ((indexFim - indexInicio + 1) * (100 / 36));
+          const ini = (parseInt(e.Inicio.slice(0,4)) - 2023) * 12 + (parseInt(e.Inicio.slice(5,7)) - 1);
+          const fim = (parseInt(e.Fim.slice(0,4)) - 2023) * 12 + (parseInt(e.Fim.slice(5,7)) - 1);
+          const left = 160 + (ini * (100 / 36)) + "%";
+          const width = ((fim - ini + 1) * (100 / 36)) + "%";
+          const top = 40 * (row + 1) + 36 + "px";
 
           const barra = document.createElement("div");
           barra.className = "barra";
           barra.textContent = e.Entrega;
           barra.style.background = cor;
-          barra.style.left = `calc(${pos}% + 180px)`;
-          barra.style.top = `-${36}px`;
-          barra.style.width = `calc(${largura}% - 4px)`;
-          barra.style.position = "absolute";
-          roadmap.appendChild(barra);
+          barra.style.left = `calc(${left})`;
+          barra.style.top = top;
+          barra.style.width = `calc(${width} - 4px)`;
+          grid.appendChild(barra);
+
+          row++;
         });
       });
     }
 
-    filtroCategoria.addEventListener("change", gerarGrade);
-    filtroAno.addEventListener("change", gerarGrade);
-
-    gerarGrade();
+    filtroCategoria.addEventListener("change", render);
+    filtroAno.addEventListener("change", render);
+    render();
   </script>
 </body>
 </html>
