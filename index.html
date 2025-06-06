@@ -2,83 +2,65 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Kanban Roadmap</title>
+  <title>Roadmap</title>
   <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px 12px;
-      text-align: left;
-    }
-    th {
-      background: #f4f4f4;
-    }
+    body { font-family: Arial, sans-serif; }
+    h2 { margin-top: 40px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; }
+    th { background: #f4f4f4; }
+    .Discovery { background: #e6f7ff; }
+    .Refinamento { background: #fffbe6; }
+    .Finalizado { background: #e6ffe6; }
   </style>
 </head>
 <body>
-  <h1>Kanban Roadmap</h1>
-  <table id="roadmap">
-    <thead>
-      <tr>
-        <th>Entrega</th>
-        <th>Fase</th>
-        <th>Início</th>
-        <th>Fim</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Linhas serão preenchidas pelo JS -->
-    </tbody>
-  </table>
-
+  <h1>Roadmap por Fase</h1>
+  <div id="roadmap"></div>
   <script>
     const dados = [
-      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "01/01/2024", Fim: "31/12/2025"},
-      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "01/01/2024", Fim: "30/06/2025"},
+      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
       {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
       {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
       {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "30/06/2025"},
-      {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "01/01/2024", Fim: "31/12/2025"},
-      {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "01/01/2024", Fim: "31/12/2025"},
-      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "01/01/2024", Fim: "31/09/2025"},
+      {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
+      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "31/09/2025"},
       {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "31/09/2025"},
       {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "01/03/2025", Fim: "30/03/2025"},
-      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "01/01/2024", Fim: "31/03/2025"},
+      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024", Fim: "31/03/2025"},
       {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
     ];
 
     function parseData(data) {
       if (!data) return new Date(0);
-      if (/^\d{4}$/.test(data)) {
-        // Apenas ano
-        return new Date(`${data}-01-01`);
-      }
+      if (/^\d{4}$/.test(data)) return new Date(`${data}-01-01`);
       if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
-        // Formato dd/mm/yyyy
         const [dia, mes, ano] = data.split("/");
         return new Date(`${ano}-${mes}-${dia}`);
       }
       return new Date(data);
     }
 
-    // Ordena pelo campo "Inicio" (data mais antiga primeiro)
-    dados.sort((a, b) => parseData(a.Inicio) - parseData(b.Inicio));
-
-    const tbody = document.querySelector("#roadmap tbody");
-    dados.forEach(item => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${item.Entrega}</td>
-        <td>${item.Fase}</td>
-        <td>${item.Inicio}</td>
-        <td>${item.Fim}</td>
-      `;
-      tbody.appendChild(tr);
+    // Ordenar por fase e por início
+    dados.sort((a, b) => {
+      if (a.Fase === b.Fase) return parseData(a.Inicio) - parseData(b.Inicio);
+      return a.Fase.localeCompare(b.Fase);
     });
+
+    // Agrupar por fase
+    const fases = [...new Set(dados.map(item => item.Fase))];
+    let html = '';
+    fases.forEach(fase => {
+      html += `<h2>${fase}</h2><table>
+        <tr><th>Entrega</th><th>Início</th><th>Fim</th></tr>`;
+      dados.filter(item => item.Fase === fase).forEach(item => {
+        html += `<tr class="${fase}"><td>${item.Entrega}</td><td>${item.Inicio}</td><td>${item.Fim}</td></tr>`;
+      });
+      html += `</table>`;
+    });
+    document.getElementById('roadmap').innerHTML = html;
   </script>
 </body>
 </html>
