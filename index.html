@@ -2,206 +2,202 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Roadmap por Mês/Ano</title>
+  <title>Roadmap de Produtos - Visual 2.0</title>
   <style>
     :root {
-      --azul-principal: #004aad;
-      --azul-claro: #d6e4f5;
-      --cinza-leve: #f0f0f0;
-      --cinza-medio: #e0e0e0;
-      --texto-claro: #fff;
-      --fonte-principal: 'Inter', 'Roboto', sans-serif;
+      --bg: #0e1a2b;
+      --text: #e1e8f0;
+      --linha: #2a3b57;
+      --borda: #3f4d68;
+      --categorias: #6ec1e4, #f6c979, #82d173, #ff92b1;
     }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: var(--fonte-principal);
-      background: #fafafa;
-      padding: 32px;
-      color: #333;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      padding: 24px;
     }
+
     h1 {
       text-align: center;
-      font-size: 24px;
+      margin-bottom: 32px;
+      font-size: 28px;
+    }
+
+    .filtros {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
       margin-bottom: 24px;
     }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px 12px;
-      text-align: center;
-      font-size: 13px;
-    }
-    th {
-      background: var(--azul-principal);
-      color: var(--texto-claro);
-      font-weight: 600;
-    }
-    .entrega {
-      text-align: left;
-      font-weight: 600;
-      background: var(--cinza-leve);
-      color: #000;
-    }
-    .ativo {
-      background: var(--azul-claro);
-      border-radius: 4px;
-    }
-    @media (max-width: 900px) {
-      th, td {
-        padding: 4px;
-        font-size: 10px;
-      }
-    }
+
     select {
-      margin: 8px 12px 24px 0;
-      padding: 6px 10px;
+      padding: 6px 12px;
       font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      background-color: #1c2c45;
+      color: var(--text);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 180px repeat(36, 1fr);
+      border-top: 1px solid var(--borda);
+      position: relative;
+    }
+
+    .linha {
+      display: contents;
+    }
+
+    .categoria {
+      background-color: var(--linha);
+      padding: 12px;
+      font-weight: 600;
+      border-bottom: 1px solid var(--borda);
+    }
+
+    .celula {
+      height: 40px;
+      border-left: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+      position: relative;
+    }
+
+    .barra {
+      position: absolute;
+      height: 30px;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      color: #fff;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .meses {
+      display: contents;
+    }
+
+    .mes-label {
+      text-align: center;
+      font-size: 12px;
+      background-color: #1b2c47;
+      padding: 4px;
+      border-left: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
     }
   </style>
 </head>
 <body>
-  <h1>Roadmap de Produtos - Plataforma</h1>
-  <label for="filtroCategoria">Categoria:</label>
-  <select id="filtroCategoria">
-    <option value="">Todas</option>
-  </select>
+  <h1>Roadmap de Produtos - Plataforma (Visual 2.0)</h1>
+  <div class="filtros">
+    <label>Categoria:
+      <select id="filtroCategoria">
+        <option value="">Todas</option>
+      </select>
+    </label>
+    <label>Ano:
+      <select id="filtroAno">
+        <option value="">Todos</option>
+      </select>
+    </label>
+  </div>
+  <div id="roadmap" class="grid"></div>
 
-  <label for="filtroAno">Ano:</label>
-  <select id="filtroAno">
-    <option value="">Todos os anos</option>
-  </select>
-
-  <div id="roadmap"></div>
   <script>
     const entregas = [
-      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024", Fim: "30/06/2025"},
-      {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "31/12/2025"},
-      {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "01/04/2025", Fim: "30/06/2025"},
-      {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024", Fim: "31/12/2025"},
-      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024", Fim: "30/09/2025"},
-      {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "01/04/2025", Fim: "30/09/2025"},
-      {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "01/03/2025", Fim: "30/03/2025"},
-      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024", Fim: "31/03/2025"},
-      {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "01/04/2025", Fim: "30/06/2025"}
+      {Entrega: "Múltiplas adquirentes", Fase: "Discovery", Inicio: "2024-01", Fim: "2025-12"},
+      {Entrega: "Pix automático", Fase: "Discovery", Inicio: "2024-01", Fim: "2025-06"},
+      {Entrega: "Unificação Navision", Fase: "Discovery", Inicio: "2025-04", Fim: "2025-12"},
+      {Entrega: "Unificação Salesforce", Fase: "Discovery", Inicio: "2025-04", Fim: "2025-12"},
+      {Entrega: "FCV Salesforce", Fase: "Discovery", Inicio: "2025-04", Fim: "2025-06"},
+      {Entrega: "Adoção B2C", Fase: "Refinamento", Inicio: "2024-01", Fim: "2025-12"},
+      {Entrega: "Backoffice Plataforma", Fase: "Refinamento", Inicio: "2024-01", Fim: "2025-12"},
+      {Entrega: "Projeto redução de perdas", Fase: "Refinamento", Inicio: "2024-01", Fim: "2025-09"},
+      {Entrega: "Redução de cancelamentos B2B", Fase: "Refinamento", Inicio: "2025-04", Fim: "2025-09"},
+      {Entrega: "Analytics B2C", Fase: "Finalizado", Inicio: "2025-03", Fim: "2025-03"},
+      {Entrega: "Adoção B2B", Fase: "Finalizado", Inicio: "2024-01", Fim: "2025-03"},
+      {Entrega: "PCI 2025", Fase: "Finalizado", Inicio: "2025-04", Fim: "2025-06"},
     ];
 
-    function parseData(data) {
-      if (!data) return null;
-      if (/^\d{4}$/.test(data)) return new Date(`${data}-01-01`);
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
-        const [dia, mes, ano] = data.split("/");
-        return new Date(`${ano}-${mes}-${dia}`);
-      }
-      return new Date(data);
-    }
+    const categorias = [...new Set(entregas.map(e => e.Fase))];
+    const cores = ["#6ec1e4", "#f6c979", "#82d173", "#ff92b1"];
 
-    function listaMeses(menor, maior) {
-      let meses = [];
-      let atual = new Date(menor.getFullYear(), menor.getMonth(), 1);
-      let fim = new Date(maior.getFullYear(), maior.getMonth(), 1);
-      while (atual <= fim) {
-        meses.push(new Date(atual));
-        atual.setMonth(atual.getMonth() + 1);
-      }
-      return meses;
-    }
+    const roadmap = document.getElementById("roadmap");
+    const filtroCategoria = document.getElementById("filtroCategoria");
+    const filtroAno = document.getElementById("filtroAno");
 
-    function renderTabela(filtroCategoria, filtroAno) {
-      const menorData = new Date(Math.min(...entregas.map(e => parseData(e.Inicio))));
-      const maiorData = new Date(Math.max(...entregas.map(e => parseData(e.Fim))));
-      let meses = listaMeses(menorData, maiorData);
-      if (filtroAno !== "") {
-        meses = meses.filter(m => m.getFullYear().toString() === filtroAno);
-      }
+    categorias.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      filtroCategoria.appendChild(opt);
+    });
 
-      const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-      let html = `<table>`;
-      html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
-      let anoAtual = null;
-      meses.forEach((m, i) => {
-        const ano = m.getFullYear();
-        if (ano !== anoAtual) {
-          const span = meses.filter(x => x.getFullYear() === ano).length;
-          html += `<th colspan="${span}">${ano}</th>`;
-          anoAtual = ano;
+    const anos = [2023, 2024, 2025];
+    anos.forEach(a => {
+      const opt = document.createElement("option");
+      opt.value = a;
+      opt.textContent = a;
+      filtroAno.appendChild(opt);
+    });
+
+    function gerarGrade() {
+      roadmap.innerHTML = "";
+      // Header meses
+      roadmap.innerHTML += `<div class='categoria'></div>`;
+      for (let a = 2023; a <= 2025; a++) {
+        for (let m = 0; m < 12; m++) {
+          const nomeMes = new Date(a, m).toLocaleString('pt-BR', { month: 'short' });
+          roadmap.innerHTML += `<div class='mes-label'>${nomeMes}/${a}</div>`;
         }
-      });
-      html += `</tr><tr><th></th><th></th>`;
-      meses.forEach(m => {
-        html += `<th>${nomesMes[m.getMonth()]}</th>`;
-      });
-      html += `</tr>`;
+      }
 
-      const fases = [...new Set(entregas.map(e => e.Fase))];
-      fases.forEach(fase => {
-        if (filtroCategoria && fase !== filtroCategoria) return;
-        const grupo = entregas.filter(e => e.Fase === fase);
-        const visiveis = grupo.filter(e => {
-          const ini = parseData(e.Inicio);
-          const fim = parseData(e.Fim);
-          return meses.some(m => m >= ini && m <= fim);
-        });
-        visiveis.forEach((e, index) => {
-          html += `<tr>`;
-          html += index === 0 ? `<td rowspan="${visiveis.length}" class="entrega">${fase}</td>` : "";
-          html += `<td class="entrega">${e.Entrega}</td>`;
-          const ini = parseData(e.Inicio);
-          const fim = parseData(e.Fim);
-          meses.forEach(m => {
-            html += (m >= ini && m <= fim) ? `<td class="ativo"></td>` : `<td></td>`;
-          });
-          html += `</tr>`;
+      let corIndex = 0;
+      categorias.forEach(cat => {
+        const cor = cores[corIndex % cores.length];
+        corIndex++;
+        const entregasCat = entregas.filter(e => e.Fase === cat &&
+          (!filtroCategoria.value || filtroCategoria.value === cat) &&
+          (!filtroAno.value || e.Inicio.startsWith(filtroAno.value) || e.Fim.startsWith(filtroAno.value)));
+
+        entregasCat.forEach(e => {
+          roadmap.innerHTML += `<div class='categoria'>${cat}</div>`;
+          for (let i = 0; i < 36; i++) roadmap.innerHTML += `<div class='celula'></div>`;
+
+          const indexInicio = (parseInt(e.Inicio.slice(0, 4)) - 2023) * 12 + (parseInt(e.Inicio.slice(5, 7)) - 1);
+          const indexFim = (parseInt(e.Fim.slice(0, 4)) - 2023) * 12 + (parseInt(e.Fim.slice(5, 7)) - 1);
+
+          const pos = (indexInicio + 1) * (100 / 36);
+          const largura = ((indexFim - indexInicio + 1) * (100 / 36));
+
+          const barra = document.createElement("div");
+          barra.className = "barra";
+          barra.textContent = e.Entrega;
+          barra.style.background = cor;
+          barra.style.left = `calc(${pos}% + 180px)`;
+          barra.style.top = `-${36}px`;
+          barra.style.width = `calc(${largura}% - 4px)`;
+          barra.style.position = "absolute";
+          roadmap.appendChild(barra);
         });
       });
-
-      html += `</table>`;
-      document.getElementById('roadmap').innerHTML = html;
     }
 
-    const filtroCategoria = document.getElementById('filtroCategoria');
-    const filtroAno = document.getElementById('filtroAno');
+    filtroCategoria.addEventListener("change", gerarGrade);
+    filtroAno.addEventListener("change", gerarGrade);
 
-    [...new Set(entregas.map(e => e.Fase))].forEach(fase => {
-      const option = document.createElement('option');
-      option.value = fase;
-      option.textContent = fase;
-      filtroCategoria.appendChild(option);
-    });
-
-    const anosAbrangidos = new Set();
-    entregas.forEach(e => {
-      const ini = parseData(e.Inicio).getFullYear();
-      const fim = parseData(e.Fim).getFullYear();
-      for (let ano = ini; ano <= fim; ano++) {
-        anosAbrangidos.add(ano);
-      }
-    });
-
-    [...anosAbrangidos].sort().forEach(ano => {
-      const option = document.createElement('option');
-      option.value = ano;
-      option.textContent = ano;
-      filtroAno.appendChild(option);
-    });
-
-    filtroCategoria.addEventListener('change', () => {
-      renderTabela(filtroCategoria.value, filtroAno.value);
-    });
-
-    filtroAno.addEventListener('change', () => {
-      renderTabela(filtroCategoria.value, filtroAno.value);
-    });
-
-    renderTabela("", "");
+    gerarGrade();
   </script>
 </body>
 </html>
