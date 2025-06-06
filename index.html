@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Roadmap de Produtos - Visual 2.0</title>
+  <title>Roadmap de Produtos - Visual 2.0 Corrigido</title>
   <style>
     :root {
       --bg: #0e1a2b;
@@ -59,22 +59,38 @@
 
     .grid {
       display: grid;
-      grid-template-columns: 160px repeat(36, 1fr);
-    }
-
-    .linha {
-      display: contents;
-    }
-
-    .cat-label {
-      background-color: var(--linha);
-      padding: 10px;
-      border-bottom: 1px solid var(--borda);
-      font-weight: 600;
+      grid-template-columns: 200px repeat(36, 1fr);
     }
 
     .cell {
       height: 40px;
+      border-left: 1px solid var(--borda);
+      border-bottom: 1px solid var(--borda);
+    }
+
+    .cat-header {
+      grid-column: span 37;
+      background-color: #223651;
+      font-weight: bold;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--borda);
+    }
+
+    .nome-entrega {
+      background-color: var(--linha);
+      padding: 10px;
+      font-weight: 500;
+      border-bottom: 1px solid var(--borda);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mes-label {
+      text-align: center;
+      font-size: 12px;
+      background-color: #15263d;
+      padding: 4px;
       border-left: 1px solid var(--borda);
       border-bottom: 1px solid var(--borda);
     }
@@ -90,15 +106,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
       color: #000;
-    }
-
-    .mes-label {
-      text-align: center;
-      font-size: 12px;
-      background-color: #15263d;
-      padding: 4px;
-      border-left: 1px solid var(--borda);
-      border-bottom: 1px solid var(--borda);
     }
   </style>
 </head>
@@ -163,7 +170,7 @@
     function render() {
       grid.innerHTML = "";
       // Cabeçalho
-      grid.innerHTML += `<div class='cat-label'></div>`;
+      grid.innerHTML += `<div class='nome-entrega'></div>`;
       for (let y of anos) {
         for (let m = 0; m < 12; m++) {
           const nome = new Date(y, m).toLocaleString("pt-BR", { month: "short" });
@@ -175,28 +182,32 @@
       let corIndex = 0;
       categorias.forEach(cat => {
         const cor = cores[corIndex++ % cores.length];
-        const linhas = entregas.filter(e => e.Fase === cat)
+        const blocos = entregas.filter(e => e.Fase === cat)
           .filter(e => !filtroCategoria.value || filtroCategoria.value === e.Fase)
           .filter(e => !filtroAno.value || e.Inicio.startsWith(filtroAno.value) || e.Fim.startsWith(filtroAno.value));
 
-        linhas.forEach(e => {
-          // Categoria
-          grid.innerHTML += `<div class='cat-label'>${cat}</div>`;
+        if (blocos.length === 0) return;
+
+        const header = document.createElement("div");
+        header.className = "cat-header";
+        header.textContent = cat;
+        grid.appendChild(header);
+        for (let i = 0; i < 36; i++) grid.appendChild(document.createElement("div"));
+
+        blocos.forEach(e => {
+          grid.innerHTML += `<div class='nome-entrega'>${e.Entrega}</div>`;
           for (let i = 0; i < 36; i++) grid.innerHTML += `<div class='cell'></div>`;
 
           const ini = (parseInt(e.Inicio.slice(0,4)) - 2023) * 12 + (parseInt(e.Inicio.slice(5,7)) - 1);
           const fim = (parseInt(e.Fim.slice(0,4)) - 2023) * 12 + (parseInt(e.Fim.slice(5,7)) - 1);
-          const left = 160 + (ini * (100 / 36)) + "%";
-          const width = ((fim - ini + 1) * (100 / 36)) + "%";
-          const top = 40 * (row + 1) + 36 + "px";
 
           const barra = document.createElement("div");
           barra.className = "barra";
           barra.textContent = e.Entrega;
           barra.style.background = cor;
-          barra.style.left = `calc(${left})`;
-          barra.style.top = top;
-          barra.style.width = `calc(${width} - 4px)`;
+          barra.style.left = `calc(200px + ${(ini) * (100 / 36)}%)`;
+          barra.style.width = `calc(${(fim - ini + 1) * (100 / 36)}% - 4px)`;
+          barra.style.top = `${72 + 40 * row}px`;
           grid.appendChild(barra);
 
           row++;
