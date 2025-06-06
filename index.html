@@ -63,6 +63,12 @@
       padding: 6px 10px;
       font-size: 14px;
     }
+    #filtroAno {
+      width: 120px;
+      height: auto;
+      max-height: 100px;
+      overflow-y: auto;
+    }
   </style>
 </head>
 <body>
@@ -73,7 +79,7 @@
   </select>
 
   <label for="filtroAno">Ano:</label>
-  <select id="filtroAno" multiple size="3"></select>
+  <select id="filtroAno" multiple></select>
 
   <div id="roadmap"></div>
   <script>
@@ -118,21 +124,14 @@
     }
 
     function renderTabela(filtroCategoria, anosSelecionados) {
-      let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
-      entregas.forEach(e => {
-        const ini = parseData(e.Inicio);
-        const fim = parseData(e.Fim);
-        if (ini < menorData) menorData = ini;
-        if (fim > maiorData) maiorData = fim;
-      });
-
+      const menorData = new Date(Math.min(...entregas.map(e => parseData(e.Inicio))));
+      const maiorData = new Date(Math.max(...entregas.map(e => parseData(e.Fim))));
       let meses = listaMeses(menorData, maiorData);
       if (anosSelecionados.length > 0) {
         meses = meses.filter(m => anosSelecionados.includes(m.getFullYear().toString()));
       }
 
       const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
-
       let html = `<table>`;
       html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
       let anoAtual = null;
@@ -179,32 +178,30 @@
     const filtroCategoria = document.getElementById('filtroCategoria');
     const filtroAno = document.getElementById('filtroAno');
 
-    const fasesUnicas = [...new Set(entregas.map(e => e.Fase))];
-    fasesUnicas.forEach(fase => {
+    [...new Set(entregas.map(e => e.Fase))].forEach(fase => {
       const option = document.createElement('option');
       option.value = fase;
       option.textContent = fase;
       filtroCategoria.appendChild(option);
     });
 
-    const anosUnicos = [...new Set(entregas.flatMap(e => {
-  const ini = parseData(e.Inicio).getFullYear();
-  const fim = parseData(e.Fim).getFullYear();
-  return Array.from({ length: fim - ini + 1 }, (_, i) => ini + i);
-}))].sort();
-    anosUnicos.forEach(ano => {
+    const anosAbrangidos = new Set();
+    entregas.forEach(e => {
+      const ini = parseData(e.Inicio).getFullYear();
+      const fim = parseData(e.Fim).getFullYear();
+      for (let ano = ini; ano <= fim; ano++) {
+        anosAbrangidos.add(ano);
+      }
+    });
+    [...anosAbrangidos].sort().forEach(ano => {
       const option = document.createElement('option');
       option.value = ano;
       option.textContent = ano;
       filtroAno.appendChild(option);
     });
 
-    filtroCategoria.addEventListener('change', () => {
-      renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno));
-    });
-    filtroAno.addEventListener('change', () => {
-      renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno));
-    });
+    filtroCategoria.addEventListener('change', () => renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno)));
+    filtroAno.addEventListener('change', () => renderTabela(filtroCategoria.value, getSelectedOptions(filtroAno)));
 
     renderTabela("", []);
   </script>
