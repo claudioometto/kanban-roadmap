@@ -59,7 +59,7 @@
       }
     }
     select {
-      margin-bottom: 16px;
+      margin: 8px 12px 24px 0;
       padding: 6px 10px;
       font-size: 14px;
     }
@@ -67,10 +67,16 @@
 </head>
 <body>
   <h1>Roadmap de Produtos - Plataforma</h1>
-  <label for="filtroCategoria">Filtrar por categoria:</label>
+  <label for="filtroCategoria">Categoria:</label>
   <select id="filtroCategoria">
     <option value="">Todas</option>
   </select>
+
+  <label for="filtroAno">Ano:</label>
+  <select id="filtroAno">
+    <option value="">Todos</option>
+  </select>
+
   <div id="roadmap"></div>
   <script>
     const entregas = [
@@ -98,14 +104,6 @@
       return new Date(data);
     }
 
-    let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
-    entregas.forEach(e => {
-      const ini = parseData(e.Inicio);
-      const fim = parseData(e.Fim);
-      if (ini < menorData) menorData = ini;
-      if (fim > maiorData) maiorData = fim;
-    });
-
     function listaMeses(menor, maior) {
       let meses = [];
       let atual = new Date(menor.getFullYear(), menor.getMonth(), 1);
@@ -117,10 +115,22 @@
       return meses;
     }
 
-    const meses = listaMeses(menorData, maiorData);
-    const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    function renderTabela(filtroCategoria, filtroAno) {
+      let menorData = new Date(2100,0,1), maiorData = new Date(1900,0,1);
+      entregas.forEach(e => {
+        const ini = parseData(e.Inicio);
+        const fim = parseData(e.Fim);
+        if (ini < menorData) menorData = ini;
+        if (fim > maiorData) maiorData = fim;
+      });
 
-    function renderTabela(filtro) {
+      let meses = listaMeses(menorData, maiorData);
+      if (filtroAno) {
+        meses = meses.filter(m => m.getFullYear().toString() === filtroAno);
+      }
+
+      const nomesMes = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
       let html = `<table>`;
       html += `<tr><th class="entrega">Categoria</th><th class="entrega">Entrega</th>`;
       let anoAtual = null;
@@ -140,11 +150,16 @@
 
       const fases = [...new Set(entregas.map(e => e.Fase))];
       fases.forEach(fase => {
-        if (filtro && fase !== filtro) return;
+        if (filtroCategoria && fase !== filtroCategoria) return;
         const grupo = entregas.filter(e => e.Fase === fase);
-        grupo.forEach((e, index) => {
+        const visiveis = grupo.filter(e => {
+          const ini = parseData(e.Inicio);
+          const fim = parseData(e.Fim);
+          return meses.some(m => m >= ini && m <= fim);
+        });
+        visiveis.forEach((e, index) => {
           html += `<tr>`;
-          html += index === 0 ? `<td rowspan="${grupo.length}" class="entrega">${fase}</td>` : "";
+          html += index === 0 ? `<td rowspan="${visiveis.length}" class="entrega">${fase}</td>` : "";
           html += `<td class="entrega">${e.Entrega}</td>`;
           const ini = parseData(e.Inicio);
           const fim = parseData(e.Fim);
@@ -159,19 +174,29 @@
       document.getElementById('roadmap').innerHTML = html;
     }
 
-    // Preencher dropdown
-    const filtroSelect = document.getElementById('filtroCategoria');
+    const filtroCategoria = document.getElementById('filtroCategoria');
+    const filtroAno = document.getElementById('filtroAno');
+
     const fasesUnicas = [...new Set(entregas.map(e => e.Fase))];
     fasesUnicas.forEach(fase => {
       const option = document.createElement('option');
       option.value = fase;
       option.textContent = fase;
-      filtroSelect.appendChild(option);
+      filtroCategoria.appendChild(option);
     });
 
-    filtroSelect.addEventListener('change', e => renderTabela(e.target.value));
+    const anosUnicos = [...new Set(entregas.flatMap(e => [parseData(e.Inicio).getFullYear(), parseData(e.Fim).getFullYear()]))].sort();
+    anosUnicos.forEach(ano => {
+      const option = document.createElement('option');
+      option.value = ano;
+      option.textContent = ano;
+      filtroAno.appendChild(option);
+    });
 
-    renderTabela("");
+    filtroCategoria.addEventListener('change', () => renderTabela(filtroCategoria.value, filtroAno.value));
+    filtroAno.addEventListener('change', () => renderTabela(filtroCategoria.value, filtroAno.value));
+
+    renderTabela("", "");
   </script>
 </body>
 </html>
